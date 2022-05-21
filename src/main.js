@@ -16,10 +16,9 @@ const server = createServer((request, response) => {
             break;
         }
 
-        case '/sign-in':{
+        case '/' || '/sign-in':{
             const filePath = resolve(__dirname, './pages/login/sign-in.html');
             readFile(filePath, (error, file) =>{
-                console.log(file);
                 if(error){
                     response.writeHead(500, 'Canot process HTML file.');
                     response.end();
@@ -36,14 +35,32 @@ const server = createServer((request, response) => {
         case '/authenticate':{
             let data = '';
             request.on('data', (chunk) =>{
-                console.log('passei');
                 data+=chunk;
             });
             request.on('end',()=>{
-                console.log(data);
-                response.writeHead(200);
-                response.end();
+
+                response.writeHead(301, {
+                    Location:'/home',
+                });
+
+                response.end(data);
             } );
+            break;
+        }
+
+        case '/home':{
+            const path = resolve(__dirname, './pages/home/home.html');
+            readFile(path, (error, file) =>{
+                if(error){
+                    response.writeHead(500, 'Canot process HTML file.');
+                    response.end();
+                    return;
+                }
+
+                response.writeHead(200);
+                response.write(file);
+                response.end();
+            });
             break;
         }
 
